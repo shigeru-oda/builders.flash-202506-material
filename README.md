@@ -22,7 +22,7 @@ aws-cli/2.27.12 Python/3.13.3 Darwin/24.4.0 exe/x86_64
 
 ### Install Terraform（未 Install の場合）
 
-リンク先の手順書を参考に Terraform を Install をして下さい
+リンク先の手順書を参考に Terraform を Install をして下さい  
 https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
 
 私の Version は以下で利用しています
@@ -35,7 +35,7 @@ on darwin_arm64
 
 ### Install git（未 Install の場合）
 
-リンク先の手順書を参考に git を Install をして下さい
+リンク先の手順書を参考に git を Install をして下さい  
 https://git-scm.com/downloads
 
 私の Version は以下で利用しています
@@ -166,6 +166,7 @@ Amazon Data Firehose からは Amazon S3 Standard のみに反映されるため
 - データソースは`AwsDataCatalog`を選択
 - カタログは`なし`を選択
 - データベースは`builders_flash_log`を選択
-  いろんな条件で json、parquet または S3 Standard、S3 Express One Zone での比較を行ってみてください。
+
+いろんな条件で json、parquet または S3 Standard、S3 Express One Zone での比較を行ってみてください。
 
 ![](./img/img05.png)
