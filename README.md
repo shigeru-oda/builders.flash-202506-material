@@ -40,21 +40,18 @@ on darwin_arm64
 https://git-scm.com/downloads
 
 私の Version は以下で利用しています
-
-```
-
 % git --version
 git version 2.49.0
-
 ```
 
 ### git clone
+
 ```
 
 git clone https://github.com/shigeru-oda/builders.flash-202506-material.git
 cd builders.flash-202506-material
 
-````
+```
 
 ### tfstate 用の S3 を作成
 
@@ -69,7 +66,7 @@ aws s3api create-bucket \
   --bucket "$BUCKET_NAME" \
   --region ap-northeast-1 \
   --create-bucket-configuration LocationConstraint=ap-northeast-1
-````
+```
 
 ### main.tf を変更
 
@@ -102,8 +99,7 @@ terraform init
 terraform apply
 -> yes
 
-※作成の前後関係設定がイマイチで、terraformが途中で落ちる場合があります。
-  再度terraform applyすることで正常終了ことを確認しています
+※作成の前後関係設定がイマイチで、terraformが途中で落ちる場合があります。再度terraform applyすることで正常終了ことを確認しています
 ```
 
 ### docker image の push
@@ -117,6 +113,8 @@ cd ./docker/
 
 ### API へのアクセス
 
+API のアクセス確認で API が通ることを確認します
+
 ```
 # DNS名取得
 DNS_NAME=$(aws elbv2 describe-load-balancers \
@@ -127,30 +125,46 @@ DNS_NAME=$(aws elbv2 describe-load-balancers \
 
 # health
 curl -X GET http://$DNS_NAME/health
+-> {"status":"healthy"}
+
 
 # orders
 curl -X POST http://$DNS_NAME/api/v1/orders \
   -H "Content-Type: application/json" \
   -H "X-User-ID: user-123" \
   -d '{"item_id": "item-abc"}'
+-> {"order_id":"77f6b"}
 
 # batch
 curl -X POST http://$DNS_NAME/api/v1/batch \
   -H "Content-Type: application/json" \
   -d '{"count": 3}'
+-> {"results":[{"order_id":"2a0da"},{"order_id":"cc26b"},{"order_id":"04d43"}]}
 ```
 
 ### Amazon S3 Express One Zone への反映
 
-Amazon Data Firehose からは Amazon S3 Standard のみに反映されます。
-Amazon S3 Express One Zone に反映する場合は
+Amazon Data Firehose からは Amazon S3 Standard のみに反映されるため、Amazon S3 Express One Zone にコンソールから反映を行います
 
-- AWS コンソールで`Amazon S3`へ移動
+- [AWS コンソールで Amazon S3 へ移動](https://ap-northeast-1.console.aws.amazon.com/s3/get-started?region=ap-northeast-1)
 - 左ペインから`ディレクトリバケット`を選択、以下 2 つのバケットがあります。
   - buildersflash-api-logs-json-xxxxxxxx--apne1-az1--x-s3
   - buildersflash-api-logs-parquet-xxxxxxxx--apne1-az1--x-s3
-- 左ペインから`ディレクトリバケット`を選択、以下 2 つのバケットがあります。
-- 一つのバケットのチェックボックスを入れて、インポートボタンを押下
-  - インポート元の汎用バケットは以下です
-    - buildersflash-api-logs-json-xxxxxxxx
-    - buildersflash-api-logs-parquet-xxxxxxxx
+- 一つのバケットのチェックボックスを入れて、`インポート`を押下
+  [](./img/img03.png)
+- インポート元の汎用バケットは以下です。json と parquet を合わせて`インポート`を押下
+  - buildersflash-api-logs-json-xxxxxxxx
+  - buildersflash-api-logs-parquet-xxxxxxxx
+    ![](./img/img04.png)
+- json と parquet の両方のバケット分を繰り返します
+
+### Athena での検索
+
+- [AWS コンソールで Amazon Athena へ移動](https://ap-northeast-1.console.aws.amazon.com/athena/home?region=ap-northeast-1)
+- ワークグループを`buildersflash-api-logs`を選択
+- データソースは`AwsDataCatalog`を選択
+- カタログは`なし`を選択
+- データベースは`builders_flash_log`を選択
+  いろんな条件で json、parquet または S3 Standard、S3 Express One Zone での比較を行ってみてください。
+
+![](./img/img05.png)
