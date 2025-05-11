@@ -170,3 +170,37 @@ Amazon Data Firehose からは Amazon S3 Standard のみに反映されるため
 いろんな条件で json、parquet または S3 Standard、S3 Express One Zone での比較を行ってみてください。
 
 ![](./img/img05.png)
+
+## 環境削除
+ECSの`必要なタスク数`を0にして、サービスを停止します
+![](./img/img06.png)
+
+中身があると削除できないリソースはコンソールから削除します
+- ECR
+  - api-service
+- S3 Standard
+  - buildersflash-api-logs-json-xxxxxxxx
+  - buildersflash-api-logs-parquet-xxxxxxxx
+  - buildersflash-athena-query-results-xxxxxxxx
+- S3 Express One Zone
+  - buildersflash-api-logs-json-xxxxxxxx--apne1-az1--x-s3
+  - buildersflash-api-logs-parquet-xxxxxxxx--apne1-az1--x-s3
+- Athena
+  - ワークグループ
+    - buildersflash-api-logs
+
+terraform destroyでリソースを削除します
+```
+cd ./terraform
+terraform destroy
+-> yes
+```
+
+tfstate 用の S3 を削除します
+- S3 Standard
+  - "tfstate-${YOUR_NAME}-${CURRENT_TIME}"
+
+Data Lake 管理者を設定を解除します
+- AWS Lake Formation
+  - Data lake administrators
+    - 自身の USER/Role
