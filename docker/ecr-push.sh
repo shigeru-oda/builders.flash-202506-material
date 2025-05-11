@@ -40,3 +40,9 @@ for svc in "${SERVICES[@]}"; do
 
   echo "=== Pushed ${svc}:latest and ${svc}:${GIT_HASH} ==="
 done
+
+# 新しいデプロイの強制
+aws ecs update-service \
+  --cluster buildersflash-cluster \
+  --service api-service \
+  --force-new-deployment
