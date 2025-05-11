@@ -35,11 +35,12 @@ on darwin_arm64
 
 ### Install git（未 Install の場合）
 
-```
 リンク先の手順書を参考に git を Install をして下さい
 https://git-scm.com/downloads
 
 私の Version は以下で利用しています
+
+```
 % git --version
 git version 2.49.0
 ```
